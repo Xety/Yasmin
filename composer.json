@@ -25,7 +25,7 @@
         "ext-openssl": "*",
         "ext-pcre": "*",
         "ext-zlib": "*",
-        "charlottedunois/collection": "^0.3.0",
+        "xety/collection": "^0.3.0",
         "xety/eventemitter": "^0.2.0",
         "xety/validator": "^0.3.0",
         "clue/buzz-react": "^2.6.0",
