@@ -26,7 +26,7 @@ class ChannelStorage extends Storage implements \CharlotteDunois\Yasmin\Interfac
         4 => 'category',
         5 => 'news',
         6 => 'store',
-        
+
         'text' => 0,
         'dm' => 1,
         'voice' => 2,
@@ -35,7 +35,7 @@ class ChannelStorage extends Storage implements \CharlotteDunois\Yasmin\Interfac
         'news' => 5,
         'store' => 6
     );
-    
+
     /**
      * Resolves given data to a channel.
      * @param \CharlotteDunois\Yasmin\Interfaces\ChannelInterface|string|int  $channel  string/int = channel ID
@@ -46,18 +46,18 @@ class ChannelStorage extends Storage implements \CharlotteDunois\Yasmin\Interfac
         if($channel instanceof \CharlotteDunois\Yasmin\Interfaces\ChannelInterface) {
             return $channel;
         }
-        
+
         if(\is_int($channel)) {
             $channel = (string) $channel;
         }
-        
+
         if(\is_string($channel) && parent::has($channel)) {
             return parent::get($channel);
         }
-        
+
         throw new \InvalidArgumentException('Unable to resolve unknown channel');
     }
-    
+
     /**
      * {@inheritdoc}
      * @param string  $key
@@ -66,7 +66,7 @@ class ChannelStorage extends Storage implements \CharlotteDunois\Yasmin\Interfac
     function has($key) {
         return parent::has($key);
     }
-    
+
     /**
      * {@inheritdoc}
      * @param string  $key
@@ -75,7 +75,7 @@ class ChannelStorage extends Storage implements \CharlotteDunois\Yasmin\Interfac
     function get($key) {
         return parent::get($key);
     }
-    
+
     /**
      * {@inheritdoc}
      * @param string                                               $key
@@ -87,10 +87,10 @@ class ChannelStorage extends Storage implements \CharlotteDunois\Yasmin\Interfac
         if($this !== $this->client->channels) {
             $this->client->channels->set($key, $value);
         }
-        
+
         return $this;
     }
-    
+
     /**
      * {@inheritdoc}
      * @param string  $key
@@ -101,10 +101,10 @@ class ChannelStorage extends Storage implements \CharlotteDunois\Yasmin\Interfac
         if($this !== $this->client->channels) {
             $this->client->channels->delete($key);
         }
-        
+
         return $this;
     }
-    
+
     /**
      * {@inheritdoc}
      * @return $this
@@ -116,11 +116,11 @@ class ChannelStorage extends Storage implements \CharlotteDunois\Yasmin\Interfac
                 unset($val);
             }
         }
-        
+
         parent::clear();
         return $this;
     }
-    
+
     /**
      * Factory to create (or retrieve existing) channels.
      * @param array                                      $data
@@ -133,22 +133,23 @@ class ChannelStorage extends Storage implements \CharlotteDunois\Yasmin\Interfac
         if($guild === null) {
             $guild = (!empty($data['guild_id']) ? $this->client->guilds->get($data['guild_id']) : null);
         }
-        
+
         if(parent::has($data['id'])) {
             $channel = parent::get($data['id']);
             $channel->_patch($data);
             return $channel;
         }
-        
+
         switch($data['type']) {
             default:
                 throw new \CharlotteDunois\Yasmin\DiscordException('Unknown channel type');
             break;
             case 0:
+            case 5:
                 if($guild === null) {
                     throw new \CharlotteDunois\Yasmin\DiscordException('Unknown guild for guild channel');
                 }
-                
+
                 $channel = new \CharlotteDunois\Yasmin\Models\TextChannel($this->client, $guild, $data);
             break;
             case 1:
@@ -158,7 +159,7 @@ class ChannelStorage extends Storage implements \CharlotteDunois\Yasmin\Interfac
                 if($guild === null) {
                     throw new \CharlotteDunois\Yasmin\DiscordException('Unknown guild for guild channel');
                 }
-                
+
                 $channel = new \CharlotteDunois\Yasmin\Models\VoiceChannel($this->client, $guild, $data);
             break;
             case 3:
@@ -168,27 +169,27 @@ class ChannelStorage extends Storage implements \CharlotteDunois\Yasmin\Interfac
                 if($guild === null) {
                     throw new \CharlotteDunois\Yasmin\DiscordException('Unknown guild for guild channel');
                 }
-                
+
                 $channel = new \CharlotteDunois\Yasmin\Models\CategoryChannel($this->client, $guild, $data);
             break;
             case 6:
                 if($guild === null) {
                     throw new \CharlotteDunois\Yasmin\DiscordException('Unknown guild for guild channel');
                 }
-                
+
                 $channel = new \CharlotteDunois\Yasmin\Models\GuildStoreChannel($this->client, $guild, $data);
             break;
         }
-        
+
         $this->set($channel->id, $channel);
-        
+
         if($guild) {
             $guild->channels->set($channel->id, $channel);
         }
-        
+
         return $channel;
     }
-    
+
     /**
      * Get the type for the channel.
      * @param \CharlotteDunois\Yasmin\Interfaces\ChannelInterface  $channel
@@ -208,7 +209,7 @@ class ChannelStorage extends Storage implements \CharlotteDunois\Yasmin\Interfac
         } elseif($channel instanceof \CharlotteDunois\Yasmin\Interfaces\GuildStoreChannelInterface) {
             return self::CHANNEL_TYPES['store'];
         }
-        
+
         return self::CHANNEL_TYPES['text'];
     }
 }
