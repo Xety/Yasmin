@@ -21,7 +21,6 @@ class Reconnect implements \CharlotteDunois\Yasmin\Interfaces\WSHandlerInterface
     }
 
     function handle(\CharlotteDunois\Yasmin\WebSocket\WSConnection $ws, $packet): void {
-        $ws->reconnect(true); // Temporary fix due to a modification from Discord
-        //$ws->reconnect($packet['d']);
+        $ws->reconnect($packet['d'] ?? true);
     }
 }
